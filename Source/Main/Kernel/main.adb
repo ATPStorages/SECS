@@ -1,5 +1,5 @@
-with CPU;                     use CPU;
 with System.Storage_Elements;
+with PNG;
 
 procedure Main is
 
@@ -91,13 +91,9 @@ procedure Main is
          end loop;
       end loop;
    end Clear;
-
-
 begin
    Clear (BLACK, False);
-   for X in Col'Range loop
-      Put_Char(X, 0, RED, BLACK, True, False, 'c');
-   end loop;
+   Put_String(0,0,WHITE,BLACK,True,False,"ELF");
    --  Loop forever.
    while (True) loop
       null;
