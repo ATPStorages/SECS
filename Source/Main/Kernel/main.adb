@@ -1,5 +1,4 @@
 with System.Storage_Elements;
-with PNG;
 
 procedure Main is
 
