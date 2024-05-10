@@ -1,4 +1,7 @@
+with Interfaces; use Interfaces;
+with KernelOps; use KernelOps;
 with System.Storage_Elements;
+with Utilities;
 
 procedure Main is
 
@@ -93,9 +96,14 @@ procedure Main is
 begin
    Clear (BLACK, False);
    Put_String(0,0,WHITE,BLACK,True,False,"ELF");
+   DisableInterrupts(True);
+   Put_String(0,1,BLUE,BLACK,True,False,"WARNING! Maskable AND Non-maskable Interrupts disabled");
+   --EnableInterrupts(True);
    --  Loop forever.
    while (True) loop
-      null;
+      if Utilities.Extract(ReadPort_Byte(PS2C_ControlPort)) = 1 then
+         Put_String(0,2,RED,BLACK,True,False, Character'Val(ReadPort_Byte(PS2C_DataPort)) & "");
+      end if;
    end loop;
 
 end Main;

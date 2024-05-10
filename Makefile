@@ -38,19 +38,18 @@ main.img: $(BUILD_DIR)/main.elf
 
 #############################################
 
-$(BUILD_DIR)/efi_main.o: main.c
-	gcc $^                                      \
+$(BUILD_DIR)/uefi.o: $(SOURCE_MAIN_DIR)/UEFI/uefi.adb
+	gnatgcc $^                                  \
 		-c                                  \
-		-fno-stack-protector                 \
+		-fno-stack-protector                \
 		-fpic                               \
-		-fshort-wchar                       \
 		-mno-red-zone                       \
 		-I $(OTHERS_DIR)/gnu-efi/inc        \
 		-I $(OTHERS_DIR)/gnu-efi/inc/x86_64 \
 		-DEFI_FUNCTION_WRAPPER              \
 		-o $@
 
-$(BUILD_DIR)/efi_main.so: $(BUILD_DIR)/efi_main.o
+$(BUILD_DIR)/uefi.so: $(BUILD_DIR)/uefi.o
 	ld $^                                                         \
 		$(OTHERS_DIR)/gnu-efi/x86_64/gnuefi/crt0-efi-x86_64.o \
 		-nostdlib                                             \
@@ -64,7 +63,7 @@ $(BUILD_DIR)/efi_main.so: $(BUILD_DIR)/efi_main.o
 		-l:libefi.a                                           \
 		-o $@
 
-$(BUILD_DIR)/main.efi: $(BUILD_DIR)/efi_main.so
+$(BUILD_DIR)/main.efi: $(BUILD_DIR)/uefi.so
 	objcopy -j .text                \
 		-j .sdata               \
 		-j .data                \
@@ -96,11 +95,14 @@ efi_disk.img: $(BUILD_DIR)/main.efi
 clean:
 	rm -rf *.img *.ali $(BUILD_DIR)/*
 
-run-efi: efi_disk.img
-	qemu-system-x86_64 -cpu qemu64 -bios OVMF.fd -drive file=$^,if=ide -net none
+run-efi: $(BUILD_DIR)/main.efi
+	uefi-run $<
+
+run-disk: efi_disk.img
+	qemu-system-x86_64 -cpu qemu64 -bios $(OTHERS_DIR)/OVMF.fd -drive file=efi_disk.img,if=ide
 
 run: $(BUILD_DIR)/main.elf
-	qemu-system-i386 -cpu qemu32-v1 -smp 1 -kernel '$<'
+	qemu-system-i386 -cpu qemu64 -kernel '$<'
 
 recomp:
 	$(MAKE) clean
