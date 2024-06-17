@@ -1,0 +1,12 @@
+name = "secs"
+description = "SECS Operating System"
+version = "0.1.0-dev"
+
+authors = ["Miko Elbrecht"]
+maintainers = ["Miko Elbrecht <pmt.mailservice@gmail.com>"]
+maintainers-logins = ["ATPStorages"]
+licenses = "GPL-3.0-or-later"
+website = "https://javart.zip"
+tags = ["secs", "os", "ada"]
+
+executables = ["secs"]
